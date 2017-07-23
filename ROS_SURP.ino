@@ -7,6 +7,7 @@
 
 #include <std_msgs/Float32.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/Bool.h>
 
 #include <Encoder.h> //encoder library - http://www.pjrc.com/teensy/td_libs_Encoder.html
 
@@ -26,12 +27,17 @@ const int step_pin1 = 9;     // the pin that define the steps
 const int dir_pin1 = 7;      // the dir pin
 const int step_pin2 = 10;     // the pin that define the steps
 const int dir_pin2 = 8;
-int32_t frequency = 5000; //frequency (in Hz)
+int32_t frequency1 = 0; //frequency (in Hz)
+int32_t frequency2 = 0; //frequency (in Hz)
 
 ros::NodeHandle nh;
 std_msgs::Float32 velLinear_x;
 std_msgs::Float32 velAngular_z;
 std_msgs::Int32 encoder;
+std_msgs::Bool motor1_dir;
+std_msgs::Bool motor2_dir;
+std_msgs::Float32 motor1_cmd;
+std_msgs::Float32 motor2_cmd
 
 ros::Publisher velLinear_x_pub("velLinear_x" , &velLinear_x);
 ros::Publisher velAngular_z_pub("velAngular_z" , &velAngular_z);
@@ -46,20 +52,36 @@ void initSensors(){
   }
 }
 
-void messageCb( const std_msgs::Int32& frequency){
-   //Write the PWM frequency for the motors
-  digitalWrite(dir_pin1, HIGH);
-  digitalWrite(dir_pin2, HIGH);
-  //this loop can be a issue if the whole program stays at it
-  while(true){
-    //setting the duty to 50% with the highest possible resolution that 
-    //can be applied to the timer (up to 16 bit). 1/2 of 65536 is 32768.
-    pwmWriteHR(step_pin1, 32768);
-    pwmWriteHR(step_pin2, 32768);
+void motor1_cmd_callback(const std_msgs::Float32& motor1_cmd){
+  frequency1 = (int)motor1_cmd.data;  
+}
+
+void motor2_cmd_callback(const std_msgs::Float32& motor2_cmd){
+  frequency2 = (int)motor2_cmd.data;
+}
+
+void motor1_dir_callback(const std_msgs::Bool& motor1_dir){
+  if(motor1_dir.data == True){
+    digitalWrite(dir_pin1, HIGH);
+  }
+  else{
+    digitalWrite(dir_pin1, LOW);
   }
 }
 
- ros::Subscriber<std_msgs::Int32> sub("???????", &messageCb );
+void motor2_dir_callback(const std_msgs::Bool& motor2_dir){
+  if(motor2_dir.data == True){
+    digitalWrite(dir_pin2, HIGH);
+  }
+  else{
+    digitalWrite(dir_pin2, LOW);
+  }
+}
+
+ ros::Subscriber<std_msgs::Float32> sub("motor1_cmd", &motor1_cmd_callback );
+ ros::Subscriber<std_msgs::Float32> sub("motor2_cmd", &motor2_cmd_callback );
+ ros::Subscriber<std_msgs::Bool> sub("motor1_dir", &motor1_cmd_callback );
+ ros::Subscriber<std_msgs::Bool> sub("motor2_dir", &motor2_cmd_callback );
 
 void setup(void){ /* this is the same as void setup() but for older C and C++ */
   //initialize all timers except for 0, to save time keeping functions
@@ -69,14 +91,25 @@ void setup(void){ /* this is the same as void setup() but for older C and C++ */
   nh.advertise(velLinear_x_pub);
   nh.advertise(velAngular_z_pub);
   nh.advertise(encoder_pub);
+  nh.subscribe(sub);
+
+  // =======================================================================================
+  /* ================ PWM Function  ======================================================= */
   
   //PWM to the motors
   pinMode(step_pin1, OUTPUT);
   pinMode(dir_pin1, OUTPUT);
-  SetPinFrequency(step_pin1, frequency); //setting the frequency to 10 Hz
+  SetPinFrequency(step_pin1, frequency1); //change for the callback function of motor1_cmd
   pinMode(step_pin2, OUTPUT);
   pinMode(dir_pin2, OUTPUT);
-  SetPinFrequency(step_pin2, frequency);
+  SetPinFrequency(step_pin2, frequency2); //change for the callback function of motor2_cmd
+
+  while(true){
+    //setting the duty to 50% with the highest possible resolution that 
+    //can be applied to the timer (up to 16 bit). 1/2 of 65536 is 32768.
+    pwmWriteHR(step_pin1, 32768);
+    pwmWriteHR(step_pin2, 32768);
+  }
 
    //initialize the sensor and its bandwidth here
    initSensors();
