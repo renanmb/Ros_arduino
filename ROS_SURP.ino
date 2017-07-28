@@ -23,10 +23,10 @@ Encoder myEnc(2,3);
 
 //Motor pins
 //use pin 11 on the Mega instead, otherwise there is a frequency cap at 31 Hz
-const int step_pin1 = 9;     // the pin that define the steps
-const int dir_pin1 = 7;      // the dir pin
-const int step_pin2 = 10;     // the pin that define the steps
-const int dir_pin2 = 8;
+const int step_pin1 = 11;     // the pin that define the steps
+const int dir_pin1 = 22;      // the dir pin
+const int step_pin2 = 12;     // the pin that define the steps
+const int dir_pin2 = 24;
 int32_t frequency1 = 0; //frequency (in Hz)
 int32_t frequency2 = 0; //frequency (in Hz)
 
