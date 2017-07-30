@@ -20,7 +20,7 @@ ros::NodeHandle nh;
 std_msgs::Bool motor1_dir;
 std_msgs::Bool motor2_dir;
 std_msgs::Float32 motor1_cmd;
-std_msgs::Float32 motor2_cmd
+std_msgs::Float32 motor2_cmd;
 
 //Motor_cmd Subscriber
 void motor1_cmd_callback(const std_msgs::Float32& motor1_cmd){
@@ -33,7 +33,7 @@ void motor2_cmd_callback(const std_msgs::Float32& motor2_cmd){
 
 //Motor_dir Subscriber
 void motor1_dir_callback(const std_msgs::Bool& motor1_dir){
-  if(motor1_dir.data == True){
+  if(motor1_dir.data == true){
     digitalWrite(dir_pin1, HIGH);
   }
   else{
@@ -42,7 +42,7 @@ void motor1_dir_callback(const std_msgs::Bool& motor1_dir){
 }
 
 void motor2_dir_callback(const std_msgs::Bool& motor2_dir){
-  if(motor2_dir.data == True){
+  if(motor2_dir.data == true){
     digitalWrite(dir_pin2, HIGH);
   }
   else{
