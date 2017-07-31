@@ -14,7 +14,6 @@ const int dir_pin1 = 22;      // the dir pin
 int32_t frequency1 = 0; //frequency (in Hz)
 
 ros::NodeHandle nh;
-std_msgs::Bool motor1_dir;
 std_msgs::Float32 motor1_cmd;
 
 //Motor_cmd Subscriber
@@ -22,9 +21,8 @@ void motor1_cmd_callback(const std_msgs::Float32& motor1_cmd){
   frequency1 = (int)motor1_cmd.data;  
 }
 
- ros::Subscriber<std_msgs::Float32> sub1("motor1_cmd", &motor1_cmd_callback );
- ros::Subscriber<std_msgs::Bool> sub2("motor1_dir", &motor1_cmd_callback );
-
+ ros::Subscriber<std_msgs::Float32> sub("motor1_cmd", &motor1_cmd_callback );
+ 
 void setup(void){ /* this is the same as void setup() but for older C and C++ */
   //initialize all timers except for 0, to save time keeping functions
   InitTimersSafe(); 
