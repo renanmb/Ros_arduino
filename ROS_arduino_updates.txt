@@ -1,0 +1,7 @@
+ROS topic Tools Throttle
+I used this tool to set the limit update frequency for the topics.
+It was the problem using rosserial
+
+Arduino Timer Object library
+
+
